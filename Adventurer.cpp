@@ -3,7 +3,7 @@
 #include <format>
 #include <memory>
 
-Adventurer::Adventurer(std::string name, int row, int col, Direction direction)
+Adventurer::Adventurer(std::string name, int col, int row, Direction direction)
 	: m_name(std::move(name)), m_row(row), m_col(col), m_direction(direction)
 {}
 
@@ -24,7 +24,7 @@ void Adventurer::changeDirection(char c)
 
 std::string Adventurer::printAdventurer() const
 {
-	return std::format("A - {} - {} - {} - {} - {}", m_name, m_row, m_col, m_direction, m_gatheredTreasure);
+	return std::format("A - {} - {} - {} - {} - {}", getName(), getCol(), getRow(), toStr(getDirection()), getTreasures());
 }
 
 std::string const& Adventurer::getName() const
@@ -37,9 +37,19 @@ int Adventurer::getRow() const
 	return m_row;
 }
 
+void Adventurer::setRow(int row)
+{
+	m_row = row;
+}
+
 int Adventurer::getCol() const
 {
 	return m_col;
+}
+
+void Adventurer::setCol(int col)
+{
+	m_col = col;
 }
 
 Direction const& Adventurer::getDirection() const
@@ -50,4 +60,9 @@ Direction const& Adventurer::getDirection() const
 int Adventurer::getTreasures() const
 {
 	return m_gatheredTreasure;
+}
+
+void Adventurer::addTreasure()
+{
+	m_gatheredTreasure++;
 }

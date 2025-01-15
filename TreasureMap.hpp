@@ -7,6 +7,7 @@
 #include <map>
 #include <set>
 #include <string>
+#include <vector>
 
 class TreasureMap
 {
@@ -20,7 +21,10 @@ public:
 	void addMountain(int row, int col);
 	void addAdventurer(Adventurer& adventurer);
 
+	bool isValid(int row, int col) const;
 	void moveAdventurer(Adventurer&, std::string const& moves);
+	void runSimulation(std::string const& filename);
+
 	std::string getSimulationResult() const;
 
 	//For debug purposes
@@ -32,3 +36,5 @@ private:
 	std::set<Adventurer> m_adventurers;
 	std::set<std::pair<int, int>> m_mountains;
 };
+
+#include "TreasureMap.inl.hpp"
