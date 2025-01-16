@@ -27,13 +27,15 @@ public:
 
 	std::string getSimulationResult() const;
 
+	std::map<std::string, Adventurer>& getAdventurers();
 	//For debug purposes
 	void printMap();
 private:
 	int m_width = 0;
 	int m_height = 0;
 	std::map<std::pair<int, int>, int> m_treasure;
-	std::set<Adventurer> m_adventurers;
+	std::set<std::pair<int, int>> m_invalidCoordinates;
+	std::map<std::string, Adventurer> m_adventurers;
 	std::set<std::pair<int, int>> m_mountains;
 };
 

@@ -3,8 +3,8 @@
 #include <format>
 #include <memory>
 
-Adventurer::Adventurer(std::string name, int col, int row, Direction direction)
-	: m_name(std::move(name)), m_row(row), m_col(col), m_direction(direction)
+Adventurer::Adventurer(std::string name, int col, int row, Direction direction, std::string moves)
+	: m_name(std::move(name)), m_row(row), m_col(col), m_direction(direction), m_moves(std::move(moves))
 {}
 
 void Adventurer::changeDirection(char c)
@@ -65,4 +65,9 @@ int Adventurer::getTreasures() const
 void Adventurer::addTreasure()
 {
 	m_gatheredTreasure++;
+}
+
+std::string const& Adventurer::getMoves() const
+{
+	return m_moves;
 }

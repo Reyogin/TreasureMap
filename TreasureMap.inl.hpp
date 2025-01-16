@@ -34,6 +34,8 @@ void execSimulation(IStream stream, TreasureMap& treasureMap)
 		auto processedLine = processLine(str);
 		auto action = processedLine[0];
 
+		if (action.length() > 1 && action.at(0) == '#')
+			continue;
 		if (action == "C")
 		{
 			treasureMap.setMapWidth(std::stoi(processedLine[1]));
@@ -45,9 +47,13 @@ void execSimulation(IStream stream, TreasureMap& treasureMap)
 			treasureMap.addTreasure(std::stoi(processedLine[1]), std::stoi(processedLine[2]), std::stoi(processedLine[3]));
 		else if (action == "A")
 		{
-			Adventurer adventurer(processedLine[1], std::stoi(processedLine[2]), std::stoi(processedLine[3]), fromChar(processedLine[4]));
-			treasureMap.moveAdventurer(adventurer, processedLine[5]);
-			treasureMap.addAdventurer(adventurer);
+			auto coordinates_col = std::stoi(processedLine[2]);
+			auto coordinates_row = std::stoi(processedLine[3]);
+			if (treasureMap.isValid(coordinates_row, coordinates_col))
+			{
+				Adventurer adventurer(processedLine[1], coordinates_col, coordinates_row, fromChar(processedLine[4]), processedLine[5]);
+				treasureMap.addAdventurer(adventurer);
+			}
 		}
 		else
 		{
@@ -55,4 +61,6 @@ void execSimulation(IStream stream, TreasureMap& treasureMap)
 			return;
 		}
 	}
+	for (auto& [adventurerName, adventurer] : treasureMap.getAdventurers())
+		treasureMap.moveAdventurer(adventurer, adventurer.getMoves());
 }

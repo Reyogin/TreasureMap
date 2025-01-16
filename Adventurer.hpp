@@ -7,7 +7,7 @@
 class Adventurer
 {
 public:
-	Adventurer(std::string name, int row, int col, Direction direction);
+	Adventurer(std::string name, int row, int col, Direction direction, std::string moves);
 
 	void changeDirection(char c);
 
@@ -21,6 +21,7 @@ public:
 	Direction const& getDirection() const;
 	int getTreasures() const;
 	void addTreasure();
+	std::string const& getMoves() const;
 
 	friend auto operator<=>(Adventurer const&, Adventurer const&) = default;
 private:
@@ -29,4 +30,5 @@ private:
 	int m_col;
 	Direction m_direction;
 	int m_gatheredTreasure = 0;
+	std::string m_moves;
 };

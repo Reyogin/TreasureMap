@@ -18,9 +18,10 @@ void TreasureMap::setMapHeight(int height)
 
 void TreasureMap::addMountain(int col, int row)
 {
-	if (!m_treasure.contains(std::make_pair(col, row)))
+	if (!m_treasure.contains(std::make_pair(col, row)) && !m_invalidCoordinates.contains({col, row}))
 	{
 		m_mountains.emplace(col, row);
+		m_invalidCoordinates.emplace(std::make_pair(col, row));
 	}
 }
 
@@ -29,7 +30,8 @@ void TreasureMap::addTreasure(int col, int row, int nb)
 	auto coordinates = std::make_pair(col, row);
 	if (!m_mountains.contains(coordinates))
 	{
-		m_treasure.emplace(coordinates, nb);
+		//Can override existing treasure
+		m_treasure.insert_or_assign(coordinates, nb);
 	}
 }
 
@@ -37,9 +39,10 @@ void TreasureMap::addAdventurer(Adventurer& adventurer)
 {
 	auto coordinates = std::make_pair(adventurer.getCol(), adventurer.getRow());
 
-	if (!m_mountains.contains(coordinates))
+	if (!m_invalidCoordinates.contains(coordinates))
 	{
-		m_adventurers.emplace(std::move(adventurer));
+		m_adventurers.emplace(adventurer.getName(), std::move(adventurer));
+		m_invalidCoordinates.emplace(coordinates);
 	}
 }
 
@@ -48,11 +51,13 @@ bool TreasureMap::isValid(int row, int col) const
 	if (row < 0 || row >= this->m_height || col < 0 || col >= this->m_width)
 		return false;
 	//current coordinates aren't a mountain
-	return m_mountains.find({ col, row }) == m_mountains.end();
+	return m_invalidCoordinates.find({ col, row }) == m_invalidCoordinates.end();
 }
 
 void TreasureMap::moveAdventurer(Adventurer& adventurer, std::string const& moves)
 {
+	//Current adventurer coordinates are no longer invalid as he is going to be moving around, the others still are
+	m_invalidCoordinates.erase({adventurer.getCol(), adventurer.getRow()});
 	for (auto const& c : moves)
 	{
 		switch (c)
@@ -83,6 +88,8 @@ void TreasureMap::moveAdventurer(Adventurer& adventurer, std::string const& move
 			break;
 		}
 	}
+	//readding current adventurer coordinates to invalid cell to prevent overlap
+	m_invalidCoordinates.insert({ adventurer.getCol(), adventurer.getRow() });
 }
 
 void TreasureMap::runSimulation(std::string const& filename)
@@ -119,7 +126,7 @@ std::string TreasureMap::getSimulationResult() const
 	}
 
 	for (auto const& adventurer : m_adventurers)
-		oss << adventurer.printAdventurer() << std::endl;
+		oss << adventurer.second.printAdventurer() << std::endl;
 
 	return oss.str();
 }
@@ -131,10 +138,10 @@ void TreasureMap::printMap()
 		for (int j = 0; j < m_width; j++)
 		{
 			std::pair<int, int> current_coordinates{ j,i };
-			if (auto adventurer = std::find_if(m_adventurers.begin(), m_adventurers.end(), [&](Adventurer const& adventurer) {
-				return adventurer.getRow() == current_coordinates.first && adventurer.getCol() == current_coordinates.second;
-				}); adventurer != m_adventurers.end())
-				std::cout << std::format("A({}) ", adventurer->getName());
+			if (auto adventurerIt = std::find_if(m_adventurers.begin(), m_adventurers.end(), [&](auto const& adventurerPair) {
+				return adventurerPair.second.getRow() == current_coordinates.first && adventurerPair.second.getCol() == current_coordinates.second;
+				}); adventurerIt != m_adventurers.end())
+				std::cout << std::format("A({}) ", adventurerIt->second.getName());
 			else if (m_mountains.contains(current_coordinates))
 				std::cout << "M ";
 			else if (auto treasure = m_treasure.find(current_coordinates); treasure != m_treasure.end())
@@ -151,3 +158,7 @@ void TreasureMap::printMap()
 	}
 }
 
+std::map<std::string, Adventurer>& TreasureMap::getAdventurers()
+{
+	return m_adventurers;
+}
