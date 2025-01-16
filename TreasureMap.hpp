@@ -28,6 +28,7 @@ public:
 	std::string getSimulationResult() const;
 
 	std::map<std::string, Adventurer>& getAdventurers();
+	void outputToFile(std::string filename);
 	//For debug purposes
 	void printMap();
 private:

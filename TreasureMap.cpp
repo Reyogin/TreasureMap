@@ -2,6 +2,8 @@
 
 #include <algorithm>
 #include <format>
+#include <fstream>
+#include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -161,4 +163,12 @@ void TreasureMap::printMap()
 std::map<std::string, Adventurer>& TreasureMap::getAdventurers()
 {
 	return m_adventurers;
+}
+
+void TreasureMap::outputToFile(std::string filename)
+{ 
+	std::ofstream myFile;
+	myFile.open(filename);
+	myFile << getSimulationResult();
+	myFile.close();
 }
